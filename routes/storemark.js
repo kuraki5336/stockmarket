@@ -12,12 +12,16 @@ const client = new Client({
     password: 'stock@123',
 })
 
+let isConnection = false
+
 /* GET home page. */
 router.get('/:date', async function (req, svres, next) {
     let date = req.params && req.params.date ?
         req.params.date :
         dateFormat(new Date(), "yyyymmdd");
 
+
+    console.log(`使用時間${date}`);
     let result = await getStore(date)
     if (result) {
         savepg(result, date, svres)
@@ -57,11 +61,18 @@ function getStore(params) {
     })
 }
 
-function savepg(result, date, svres) {
+async function savepg(result, date, svres) {
     // 清除資料庫
-    client.connect();
+    console.log(client);
+    if (!isConnection)
+        await client.connect().then(
+            () => {
+                isConnection = true
+            }
+        );
+
     console.log('succese');
-    client
+    await client
         .query('truncate table store.stota')
         .then((res) => {
             console.log('clear stota')
@@ -69,22 +80,20 @@ function savepg(result, date, svres) {
         .catch(e => console.error(e.stack))
 
     //1. 組合字串 並寫入代號
-    console.log(`1. 組合字串 並寫入代號`);
     let tsqlstr = ''
     result.forEach(item => {
         tsqlstr += `INSERT INTO store.stota("id", "name") VALUES ('${item.id}', '${item.name}');`;
     });
 
-    client
+    await client
         .query(tsqlstr)
         .then((res) => {
             console.log('complete stota')
         })
         .catch(e => console.error(e.stack))
 
-
-    console.log(`2. 寫入本日交易資訊`);
-    client
+    console.log(`存檔日期:${date} 存檔數量:${result.length}`);
+    await client
         .query(`DELETE FROM store.stotb where opdate='${date}'`)
         .then((res) => {
             console.log('clear stotb')
@@ -94,10 +103,10 @@ function savepg(result, date, svres) {
     result.forEach(item => {
         let mrate = (Number(item.buycount.replace(',', '')) / (Number(item.sellcount.replace(',', '')) + Number(item.buycount.replace(',', '')))) * 100
         isNaN(mrate) ? mrate = 0 : mrate
-        tsqlstr += `INSERT INTO store.stotb VALUES ('${item.id}', '${date}', '${item.buycount}','${item.sellcount}',${mrate.toFixed(2)});`;
+        tsqlstr += `INSERT INTO store.stotb (id, opdate, purchase_count, sell_count, compare_rate) VALUES ('${item.id}', '${date}', '${item.buycount}','${item.sellcount}',${mrate.toFixed(2)});`;
     });
 
-    client
+    await client
         .query(tsqlstr)
         .then((res) => {
             console.log('complete stotb')
@@ -106,6 +115,7 @@ function savepg(result, date, svres) {
             }
         })
         .catch(e => console.error(e.stack))
+
 }
 
 async function doSaveDate(params) {
