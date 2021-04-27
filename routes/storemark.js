@@ -45,6 +45,9 @@ function getStore(params) {
                                 name: item[1],
                                 buycount: item[12],
                                 sellcount: item[14],
+                                start_price:item[5],
+                                end_price:item[8],
+                                diff_price:item[10]
                             }
                         })
                         resolve(result)
@@ -101,9 +104,19 @@ async function savepg(result, date, svres) {
         .catch(e => console.error(e.stack))
     tsqlstr = ''
     result.forEach(item => {
+        /** 買賣比重 */
         let mrate = (Number(item.buycount.replace(',', '')) / (Number(item.sellcount.replace(',', '')) + Number(item.buycount.replace(',', '')))) * 100
         isNaN(mrate) ? mrate = 0 : mrate
-        tsqlstr += `INSERT INTO store.stotb (id, opdate, purchase_count, sell_count, compare_rate) VALUES ('${item.id}', '${date}', '${item.buycount}','${item.sellcount}',${mrate.toFixed(2)});`;
+        /** 漲幅比重 */
+        let miprate = (Number(item.end_price.replace(',', ''))  / Number(item.start_price.replace(',', '')) -1 )* 100 
+        isNaN(miprate) ? miprate = 0 : miprate
+        const mupanddown = item.end_price.replace(',', '') > item.start_price.replace(',', '') ? '0':'1'
+
+        tsqlstr += `INSERT INTO store.stotb 
+        (id, opdate, purchase_count, sell_count, compare_rate, ip_rate, ip_price, ip_up) 
+        VALUES ('${item.id}', '${date}', '${item.buycount}','${item.sellcount}',${mrate.toFixed(2)},
+                ${miprate.toFixed(2)}, ${item.diff_price}, ${mupanddown}
+        );`;
     });
 
     await client
