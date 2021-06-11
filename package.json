@@ -16,6 +16,7 @@
     "morgan": "~1.9.1",
     "node-sass-middleware": "0.11.0",
     "node-schedule": "^2.0.0",
-    "pg": "^8.6.0"
+    "pg": "^8.6.0",
+    "supervisor": "^0.12.0"
   }
 }
