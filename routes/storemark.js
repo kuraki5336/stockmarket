@@ -45,9 +45,10 @@ function getStore(params) {
                                 name: item[1],
                                 buycount: item[12],
                                 sellcount: item[14],
-                                start_price:item[5],
-                                end_price:item[8],
-                                diff_price:item[10]
+                                start_price: item[5],
+                                end_price: item[8],
+                                diff_price: item[10],
+                                succese_count: item[3],
                             }
                         })
                         resolve(result)
@@ -108,14 +109,20 @@ async function savepg(result, date, svres) {
         let mrate = (Number(item.buycount.replace(',', '')) / (Number(item.sellcount.replace(',', '')) + Number(item.buycount.replace(',', '')))) * 100
         isNaN(mrate) ? mrate = 0 : mrate
         /** 漲幅比重 */
-        let miprate = (Number(item.end_price.replace(',', ''))  / Number(item.start_price.replace(',', '')) -1 )* 100 
+        let miprate = (Number(item.end_price.replace(',', '')) / Number(item.start_price.replace(',', '')) - 1) * 100
         isNaN(miprate) ? miprate = 0 : miprate
-        const mupanddown = item.end_price.replace(',', '') > item.start_price.replace(',', '') ? '0':'1'
+        const mupanddown = item.end_price.replace(',', '') > item.start_price.replace(',', '') ? '0' : '1'
+        /** 成交量 */
+        let succese_count = Number(item.succese_count.replace(',', ''))
+        let end_price = Number(item.end_price.replace(',', ''))
+        isNaN(end_price) ? end_price = 0 : end_price
 
         tsqlstr += `INSERT INTO store.stotb 
-        (id, opdate, purchase_count, sell_count, compare_rate, ip_rate, ip_price, ip_up) 
+        (id, opdate, purchase_count, sell_count, compare_rate, ip_rate, ip_price, ip_up
+            , succese_count, id_name, end_price) 
         VALUES ('${item.id}', '${date}', '${item.buycount}','${item.sellcount}',${mrate.toFixed(2)},
-                ${miprate.toFixed(2)}, ${item.diff_price}, ${mupanddown}
+                ${miprate.toFixed(2)}, ${item.diff_price}, ${mupanddown}, '${succese_count}',
+                '${item.name}(${item.id})', ${end_price}
         );`;
     });
 
