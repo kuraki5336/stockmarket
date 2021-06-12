@@ -9,6 +9,8 @@ var sassMiddleware = require('node-sass-middleware');
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 var kafka = require('./routes/kafka');
+var consumergroup = require('./routes/consumergroup');
+var consumergroup2 = require('./routes/consumergroup2');
 var { storeRouter } = require('./routes/storemark')
 var schedule = require('./routes/schedule')
 
@@ -36,6 +38,8 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/store', storeRouter);
 app.use('/kafka', kafka);
+app.use('/consumergroup', consumergroup);
+app.use('/consumergroup2', consumergroup2);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
