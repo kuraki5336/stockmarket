@@ -8,7 +8,7 @@ const client = new kafka.KafkaClient({
 
 const producer = new kafka.Producer(client, {
   partitionerType: 1,
-  requireAcks: 1,
+  requireAcks: 0,
   ackTimeoutMs: 100,
 });
 
@@ -27,20 +27,24 @@ const consumer = new kafka.Consumer(
   client,
   [
     { topic: "social", partition: 0, offset: 0 },
-    { topic: "social", partition: 1, offset: 0 },
+    // { topic: "social", partition: 1, offset: 0 },
   ],
   {
     autoCommit: false,
-    // groupId: "group1",
-    fromOffset: true,
+    // 這個地說明好奇怪他是反的， fromoffset 要設定為 false他才會從offset的位置出發.
+    fromOffset: false,
   }
 );
 
 consumer.on("message", function (message) {
-  console.log(hello);
-  console.log(message);
-  console.log(`用戶畫面: ` + JSON.stringify(message));
+  console.log(`--- get consumer ` + JSON.stringify(message));
+
+  consumer.commit(function(err, data) {
+    console.log(`--- commit go`);
+    console.log(`--- commit ${JSON.stringify(data)}`);
+  });
 });
+
 
 consumer.on("error", function (err) {
   console.log(`err`, err);
@@ -48,17 +52,17 @@ consumer.on("error", function (err) {
 
 /* GET users listing. */
 router.get("/1/:xmessage", function (req, res, next) {
-  const km = new KeyedMessage("key", "mess222age");
   const payload = [
     {
       topic: "social",
       messages: req.params.xmessage,
-      // messages: [km]
+      partition:0
     },
   ];
   producer.send(payload, function (err, data) {
     res.send(`user: ` + req.params.xmessage);
-    console.log(data);
+    console.log(`--- producer callback ---`);
+    console.log(`--- producer ${JSON.stringify(data)}`);
   });
 });
 
