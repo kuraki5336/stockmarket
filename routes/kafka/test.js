@@ -21,7 +21,6 @@ const consumerOptions = {
 const consumerGroup = new ConsumerGroupStream(consumerOptions, "callback");
 
 consumerGroup.on('data', function (message) {
-  console.log(654321);
   console.log(message.offset)
   consumerGroup.commit(message, true)
 })

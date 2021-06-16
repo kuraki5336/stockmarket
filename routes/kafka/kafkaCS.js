@@ -26,6 +26,7 @@ const messageTransform = new Transform({
   decodeStrings: true,
   transform(message, encoding, callback) {
     console.log(`Received message ${message.value} transforming input`);
+    
     callback(null, {
       topic: "callback",
       messages: `You have been (${message.value}) made an example of`,
