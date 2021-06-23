@@ -6,6 +6,7 @@
     "start": "supervisor ./bin/www"
   },
   "dependencies": {
+    "axios": "^0.21.1",
     "cookie-parser": "~1.4.4",
     "dateformat": "^4.5.1",
     "debug": "~2.6.9",
@@ -13,6 +14,7 @@
     "express": "~4.16.1",
     "http-errors": "~1.6.3",
     "kafka-node": "^5.0.0",
+    "kafka-streams": "^5.0.0",
     "morgan": "~1.9.1",
     "node-sass-middleware": "0.11.0",
     "node-schedule": "^2.0.0",
