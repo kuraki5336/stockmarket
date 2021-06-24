@@ -6,6 +6,7 @@
     "start": "supervisor ./bin/www"
   },
   "dependencies": {
+    "axios": "^0.21.1",
     "cookie-parser": "~1.4.4",
     "dateformat": "^4.5.1",
     "debug": "~2.6.9",
