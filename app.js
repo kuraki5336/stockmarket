@@ -11,8 +11,8 @@ var usersRouter = require('./routes/users');
 var kafka = require('./routes/kafka');
 var consumergroup = require('./routes/consumergroup');
 var consumergroup2 = require('./routes/consumergroup2');
-var kfkps = require('./routes/kafka/kafkaPS');
-var kfkcs = require('./routes/kafka/kafkaCS');
+// var kfkps = require('./routes/kafka/kafkaPS');
+// var kfkcs = require('./routes/kafka/kafkaCS');
 var { storeRouter } = require('./routes/storemark')
 var schedule = require('./routes/schedule')
 
@@ -40,8 +40,8 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/store', storeRouter);
 app.use('/kafka', kafka);
-app.use('/kfkps', kfkps);
-app.use('/kfkps', kfkcs);
+// app.use('/kfkps', kfkps);
+// app.use('/kfkps', kfkcs);
 // app.use('/consumergroup', consumergroup);
 // app.use('/consumergroup2', consumergroup2);
 
